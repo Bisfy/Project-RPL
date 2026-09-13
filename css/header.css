@@ -1,127 +1,27 @@
-@font-face {
-    font-family: 'HelveticaNeue';
-    src: url('../fonts/helveticaneuecyr_roman.otf') format('opentype');
-    font-weight: 400;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'HelveticaNeue';
-    src: url('../fonts/helveticaneuecyr_black.otf') format('opentype');
-    font-weight: 900;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'HelveticaNeue';
-    src: url('../fonts/helveticaneuecyr_thin.otf') format('opentype');
-    font-weight: 200;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'HelveticaNeue';
-    src: url('../fonts/helveticaneuecyr_ultralight.otf') format('opentype');
-    font-weight: 100;
-    font-style: normal;
-}
-
-html, body {
-    margin: 0;
-    padding: 0;
-}
-
-@keyframes slideDownFade {
-    0% {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0px);
-    }
-}
-
-@keyframes popIn {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.header-box {
-    width: 67%;
-    box-sizing: border-box;
-    border-radius: 0px 0px 16px 16px;
-    height: 106px;
-    background-color: #04ffff6c;
-    border: 3px solid rgba(255, 255, 255, 0.25);
-    padding: 0px;
-    margin: 0 auto;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.15);
-    background-image: url('../assets/images/back2.png');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
+.navbar {
+    padding: 24px;
     display: flex;
-    align-items: center;
     justify-content: center;
-    animation: slideDownFade 0.8s ease-out forwards;
 }
 
-.header {
+.nav-content {
+    width: 100%;
+    max-width: 1300px;
     display: flex;
-    flex-direction: column;
-    gap: 4px;
-    text-align: center;
+    justify-content: space-between;
     align-items: center;
 }
 
-.header a {
-    margin: 0;
-    font-family: 'HelveticaNeue', sans-serif;
-    font-weight: 900;
-    font-size: 20px;
-    color: #ffffff;
-    text-decoration: none;
+.navbar h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
 }
 
-.header h3 {
-    margin: 0;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.6);
-}
-
-@media (max-width: 768px) {
-    .header-box {
-        height: auto;
-        padding: 15px;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .avatar {
-        width: 60px;
-        height: 60px;
-        margin-right: 0;
-        margin-bottom: 8px;
-    }
-
-    .info-profil .nama {
-        font-size: 16px;
-    }
-
-    .info-profil p, .info-profil .link-email {
-        font-size: 11px;
-    }
+.badge {
+    background-color: var(--surface-variant);
+    color: var(--text-sub);
+    padding: 6px 16px;
+    border-radius: var(--radius-btn);
+    font-size: 0.85rem;
+    font-weight: 600;
 }

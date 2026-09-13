@@ -3,117 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Tech Fest 2026</title>
-    <link rel="icon" type="image" href="assets/icons/">
-    <link rel="stylesheet" href="css/header.css">
+    <title>Dashboard Management Peserta - Tech Fest 2026</title>
+    
     <link rel="stylesheet" href="css/body.css">
     <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="css/header.css">
     <script src="js/script.js" defer></script>
 </head>
 <body>
-    <header>
-        <div class="header-box">
-            <section class="header">
-                <h3>Pendaftaran Tech Fest 2026</h3>
-                <a>--</a>
-            </section>
+
+    <header class="navbar">
+        <div class="nav-content">
+            <h1>Tech Fest 2026</h1>
+            <span class="badge">Dashboard Admin</span>
         </div>
     </header>
 
-   <main class="body-web">
-        <div class="atas">
-            <article class="card">
-                <h2 class="theme">Informasi Acara</h2>
-                <p class="isi">Silakan isi formulir di bawah untuk mendaftar ke kegiatan Tech Fest 2026.</p>
-            </article> 
-        </div>
+    <main class="container">
+        <section class="pixel-card form-card">
+            <div class="card-header">
+                <h2 id="formTitle">Formulir Pendaftaran</h2>
+                <button type="button" id="btnCancelEdit" class="btn-cancel" style="display: none;">Batal Edit</button>
+            </div>
+            
+            <div id="statusAlert" class="alert-box"></div>
 
-        <div class="bawah">
-            <article class="card">
-                <h2 class="theme">Formulir Pendaftaran</h2>
-                
-                <div id="hasil"></div>
+            <form id="formPendaftaran" novalidate>
+                <input type="hidden" id="editId" value="">
 
-                <form id="formPendaftaran" action="#" method="POST">
-                    <div class="form-group">
-                        <label for="nama">Nama Lengkap</label>
-                        <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap">
-                        <small id="error-nama"></small>
-                    </div>
+                <div class="field-group">
+                    <label for="nama">Nama Lengkap</label>
+                    <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap">
+                    <span class="error-msg" id="err-nama"></span>
+                </div>
 
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" placeholder="Example67@email.com">
-                        <small id="error-email"></small>
-                    </div>
+                <div class="field-group">
+                    <label for="email">Alamat Email</label>
+                    <input type="email" id="email" name="email" placeholder="nama@email.com">
+                    <span class="error-msg" id="err-email"></span>
+                </div>
 
-                    <div class="form-group">
+                <div class="field-row">
+                    <div class="field-group">
                         <label for="kelas">Kelas</label>
                         <select id="kelas" name="kelas">
-                            <option value="">Kelas</option>
+                            <option value="">Pilih Kelas</option>
                             <option value="X">Kelas X</option>
                             <option value="XI">Kelas XI</option>
                             <option value="XII">Kelas XII</option>
                         </select>
-                        <small id="error-kelas"></small>
+                        <span class="error-msg" id="err-kelas"></span>
                     </div>
 
-                    <div class="form-group">
+                    <div class="field-group">
                         <label for="jurusan">Jurusan</label>
                         <select id="jurusan" name="jurusan">
-                            <option value="">Jurusan</option>
-                            <option value="RPL">Rekayasa Perangkat Lunak</option>
-                            <option value="TKJ">Teknik Komputer & Jaringan</option>
+                            <option value="">Pilih Jurusan</option>
+                            <option value="RPL">RPL</option>
+                            <option value="TKJ">TKJ</option>
                             <option value="MM">Multimedia</option>
                         </select>
-                        <small id="error-jurusan"></small>
+                        <span class="error-msg" id="err-jurusan"></span>
                     </div>
+                </div>
 
-                    <div class="form-group">
-                        <label for="kegiatan">Kegiatan</label>
-                        <input type="text" id="kegiatan" name="kegiatan" placeholder="Masukkan nama kegiatan">
-                        <small id="error-kegiatan"></small>
+                <div class="field-group">
+                    <label for="kegiatan">Nama Kegiatan</label>
+                    <input type="text" id="kegiatan" name="kegiatan" placeholder="Contoh: Workshop Web Dev">
+                    <span class="error-msg" id="err-kegiatan"></span>
+                </div>
+
+                <div class="field-group">
+                    <label>Pilihan Konsumsi</label>
+                    <div class="segmented-control">
+                        <label class="segment-option">
+                            <input type="radio" name="konsumsi" value="Reguler">
+                            <span>Reguler</span>
+                        </label>
+                        <label class="segment-option">
+                            <input type="radio" name="konsumsi" value="Vegetarian">
+                            <span>Vegetarian</span>
+                        </label>
                     </div>
+                    <span class="error-msg" id="err-konsumsi"></span>
+                </div>
 
-                    <div class="form-group">
-            <label>Pilihan Konsumsi</label>
-                <div style="display: flex; gap: 15px; margin-top: 5px;">
-                <label style="font-weight: normal; cursor: pointer;">
-                    <input type="radio" name="konsumsi" value="Biasa (Reguler)"> Biasa
-                </label>
-                    <label style="font-weight: normal; cursor: pointer;">
-                        <input type="radio" name="konsumsi" value="Vegetarian"> Vegetarian
-                </label>
-                        </div>
-                        <small id="error-konsumsi"></small>
-                    </div>
+                <div class="field-group" id="statusFieldGroup" style="display: none;">
+                    <label for="statusPeserta">Status Peserta</label>
+                    <select id="statusPeserta" name="statusPeserta">
+                        <option value="Pending">Pending</option>
+                        <option value="Approve">Approve</option>
+                        <option value="Reject">Reject</option>
+                    </select>
+                </div>
 
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="persetujuan" name="persetujuan">
-                        <label for="persetujuan">Saya menyetujui Syarat & Ketentuan</label>
-                    </div>
-                    <small id="error-persetujuan"></small>
+                <div class="field-group checkbox-wrapper">
+                    <label class="pixel-checkbox">
+                        <input type="checkbox" id="persetujuan">
+                        <span class="checkmark"></span>
+                        <span class="label-text">Saya menyetujui syarat & ketentuan</span>
+                    </label>
+                    <span class="error-msg" id="err-persetujuan"></span>
+                </div>
 
-                    <button type="submit" class="btn-submit">Daftar Sekarang</button>
-                </form>
-            </article>
-        </div>
+                <button type="submit" id="btnSubmit" class="pixel-btn" disabled>Daftar Sekarang</button>
+            </form>
+        </section>
+
+        <section class="pixel-card table-card">
+            <h2>Daftar Peserta Terdaftar</h2>
+            <div class="table-wrapper">
+                <table class="pixel-table">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Kelas & Jurusan</th>
+                            <th>Kegiatan</th>
+                            <th>Konsumsi</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelPesertaBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <footer class="footer">
-        <p>&copy; 2026 Bisfy. All Right Reserved.</p>
-        <p class="sub-teks">May This Journey Lead Us Starward!</p>
+        <p>&copy; 2026 Bisfy. May This Journey Lead Us Starward!</p><br>
+        <h6>Inspired By You Material (PixelOs UI)</h6>
     </footer>
-    
-    <script>
-        document.addEventListener("click", (e) => {
-            const link = e.target.closest(".card-link");
-            if (!link) return;
-            
-            e.preventDefault();
-            document.body.classList.add("fade-out");
-            setTimeout(() => window.location.href = link.href, 500);
-        });
-    </script>
+
 </body>
 </html>

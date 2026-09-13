@@ -1,9 +1,17 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const form = document.getElementById("formPendaftaran");
-    const hasilDiv = document.getElementById("hasil");
-    const btnSubmit = form.querySelector(".btn-submit");
+    let daftarPendaftar = JSON.parse(localStorage.getItem("daftarPendaftar")) || [];
 
-    const inputs = {
+     const form = document.getElementById("formPendaftaran");
+    const statusAlert = document.getElementById("statusAlert");
+    const btnSubmit = document.getElementById("btnSubmit");
+    const tabelBody = document.getElementById("tabelPesertaBody");
+    const formTitle = document.getElementById("formTitle");
+    const editIdInput = document.getElementById("editId");
+    const btnCancelEdit = document.getElementById("btnCancelEdit");
+    const statusFieldGroup = document.getElementById("statusFieldGroup");
+    const statusPesertaSelect = document.getElementById("statusPeserta");
+
+    const fields = {
         nama: document.getElementById("nama"),
         email: document.getElementById("email"),
         kelas: document.getElementById("kelas"),
@@ -12,115 +20,233 @@ document.addEventListener("DOMContentLoaded", () => {
         persetujuan: document.getElementById("persetujuan")
     };
 
-    const toggleSubmitButton = () => {
-        btnSubmit.disabled = !inputs.persetujuan.checked;
+    const saveData = () => {
+        localStorage.setItem("daftarPendaftar", JSON.stringify(daftarPendaftar));
     };
-    
-    toggleSubmitButton();
 
-    inputs.persetujuan.addEventListener("change", () => {
-        toggleSubmitButton();
+    const escapeHtml = (str) => {
+        return str.replace(/[&<>"']/g, (m) => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        })[m]);
+    };
+
+    const renderTampilan = () => {
+        tabelBody.innerHTML = "";
+
+        if (daftarPendaftar.length === 0) {
+            tabelBody.innerHTML = `
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-sub); padding: 24px;">
+                        Belum ada peserta yang terdaftar.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+
+        daftarPendaftar.forEach((peserta) => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><strong>${escapeHtml(peserta.nama)}</strong></td>
+                <td>${escapeHtml(peserta.email)}</td>
+                <td>${peserta.kelas} - ${peserta.jurusan}</td>
+                <td>${escapeHtml(peserta.kegiatan)}</td>
+                <td>${peserta.konsumsi}</td>
+                <td><span class="status-badge ${peserta.status}">${peserta.status}</span></td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn-action btn-edit" onclick="handleEdit('${peserta.id}')">Edit</button>
+                        <button class="btn-action btn-delete" onclick="handleDelete('${peserta.id}')">Hapus</button>
+                    </div>
+                </td>
+            `;
+            tabelBody.appendChild(tr);
+        });
+    };
+
+    const toggleSubmit = () => {
+        btnSubmit.disabled = !fields.persetujuan.checked;
+    };
+
+    fields.persetujuan.addEventListener("change", () => {
+        toggleSubmit();
         clearError("persetujuan");
     });
 
-    const showError = (field, message) => {
-        const errorElement = document.getElementById(`error-${field}`);
-        if (errorElement) {
-            errorElement.textContent = message;
-        }
-        if (inputs[field] && inputs[field].type !== "checkbox") {
-            inputs[field].style.borderColor = "#ff5252";
-        }
+    const setError = (key, msg) => {
+        const errEl = document.getElementById(`err-${key}`);
+        if (errEl) errEl.textContent = msg;
     };
 
-    const clearError = (field) => {
-        const errorElement = document.getElementById(`error-${field}`);
-        if (errorElement) {
-            errorElement.textContent = "";
-        }
-        if (inputs[field] && inputs[field].type !== "checkbox") {
-            inputs[field].style.borderColor = "var(--card-border)";
-        }
+    const clearError = (key) => {
+        const errEl = document.getElementById(`err-${key}`);
+        if (errEl) errEl.textContent = "";
     };
 
     const isValidEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(String(email).toLowerCase());
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
     };
 
-    const validateForm = () => {
-        let isValid = true;
+    const validate = () => {
+        let valid = true;
 
-        if (inputs.nama.value.trim() === "") {
-            showError("nama", "Namanya tolong diisi ya....");
-            isValid = false;
-        } else if (inputs.nama.value.trim().length < 3) {
-            showError("nama", "Minimal 3 huruf ya...");
-            isValid = false;
-        } else {
-            clearError("nama");
-        }
+        if (!fields.nama.value.trim()) {
+            setError("nama", "Nama wajib diisi.");
+            valid = false;
+        } else clearError("nama");
 
-        if (inputs.email.value.trim() === "") {
-            showError("email", "Emailnya tolong diisi dulu ya...");
-            isValid = false;
-        } else if (!isValidEmail(inputs.email.value.trim())) {
-            showError("email", "Emailnya nggak valid nih.");
-            isValid = false;
-        } else {
-            clearError("email");
-        }
+        if (!fields.email.value.trim()) {
+            setError("email", "Email wajib diisi.");
+            valid = false;
+        } else if (!isValidEmail(fields.email.value.trim())) {
+            setError("email", "Format email tidak valid.");
+            valid = false;
+        } else clearError("email");
 
-        if (inputs.kelas.value === "") {
-            showError("kelas", "Pilih kelas dulu.");
-            isValid = false;
-        } else {
-            clearError("kelas");
-        }
+        if (!fields.kelas.value) {
+            setError("kelas", "Pilih kelas.");
+            valid = false;
+        } else clearError("kelas");
 
-        if (inputs.jurusan.value === "") {
-            showError("jurusan", "Pilih jurusan dulu.");
-            isValid = false;
-        } else {
-            clearError("jurusan");
-        }
+        if (!fields.jurusan.value) {
+            setError("jurusan", "Pilih jurusan.");
+            valid = false;
+        } else clearError("jurusan");
 
-        if (inputs.kegiatan.value.trim() === "") {
-            showError("kegiatan", "Nama kegiatan diisi dulu.");
-            isValid = false;
-        } else {
-            clearError("kegiatan");
-        }
+        if (!fields.kegiatan.value.trim()) {
+            setError("kegiatan", "Kegiatan wajib diisi.");
+            valid = false;
+        } else clearError("kegiatan");
 
-        return isValid;
+        const selectedKonsumsi = form.querySelector('input[name="konsumsi"]:checked');
+        if (!selectedKonsumsi) {
+            setError("konsumsi", "Pilih konsumsi.");
+            valid = false;
+        } else clearError("konsumsi");
+
+        return valid;
     };
 
-    Object.keys(inputs).forEach((key) => {
+    Object.keys(fields).forEach((key) => {
         if (key === "persetujuan") return;
-        const element = inputs[key];
-        const eventType = element.tagName === "SELECT" ? "change" : "input";
-        
-        element.addEventListener(eventType, () => {
-            clearError(key);
-        });
+        const el = fields[key];
+        const eventName = el.tagName === "SELECT" ? "change" : "input";
+        el.addEventListener(eventName, () => clearError(key));
     });
 
-    form.addEventListener("submit", (e) => {
+    const radioGroup = form.querySelectorAll('input[name="konsumsi"]');
+    radioGroup.forEach(radio => radio.addEventListener("change", () => clearError("konsumsi")));
+
+    const resetFormMode = () => {
+        form.reset();
+        editIdInput.value = "";
+        formTitle.textContent = "Formulir Pendaftaran";
+        btnSubmit.textContent = "Daftar Sekarang";
+        btnCancelEdit.style.display = "none";
+        statusFieldGroup.style.display = "none";
+        toggleSubmit();
+    };
+
+    window.handleEdit = (id) => {
+        const targetPeserta = daftarPendaftar.find(p => p.id === id);
+        if (!targetPeserta) return;
+
+        editIdInput.value = targetPeserta.id;
+        fields.nama.value = targetPeserta.nama;
+        fields.email.value = targetPeserta.email;
+        fields.kelas.value = targetPeserta.kelas;
+        fields.jurusan.value = targetPeserta.jurusan;
+        fields.kegiatan.value = targetPeserta.kegiatan;
+        
+        const radioTarget = form.querySelector(`input[name="konsumsi"][value="${targetPeserta.konsumsi}"]`);
+        if (radioTarget) radioTarget.checked = true;
+
+        fields.persetujuan.checked = true;
+        statusPesertaSelect.value = targetPeserta.status;
+
+        formTitle.textContent = "Edit Data Peserta";
+        btnSubmit.textContent = "Perbarui Data";
+        btnCancelEdit.style.display = "inline-block";
+        statusFieldGroup.style.display = "flex";
+
+        toggleSubmit();
+        form.scrollIntoView({ behavior: "smooth" });
+    };
+
+   window.handleDelete = (id) => {
+        const confirmDelete = confirm("Apakah Anda yakin ingin menghapus peserta ini?");
+        if (confirmDelete) {
+            daftarPendaftar = daftarPendaftar.filter(p => p.id !== id);
+            saveData();
+            renderTampilan();
+            
+            if (editIdInput.value === id) {
+                resetFormMode();
+            }
+        }
+    };
+
+    btnCancelEdit.addEventListener("click", () => {
+        resetFormMode();
+    });
+
+     form.addEventListener("submit", (e) => {
         e.preventDefault();
 
-        if (validateForm()) {
-            hasilDiv.className = "success";
-            hasilDiv.innerHTML = `<strong>Pendaftaran Berhasil!</strong><br>Terima kasih, ${inputs.nama.value}. Data Anda telah terdata untuk kegiatan ${inputs.kegiatan.value}.`;
+        if (validate()) {
+            const isEditMode = editIdInput.value !== "";
+            const konsumsiValue = form.querySelector('input[name="konsumsi"]:checked').value;
 
-            form.reset();
-            toggleSubmitButton();
+            if (isEditMode) {
+                const targetId = editIdInput.value;
+                daftarPendaftar = daftarPendaftar.map(p => {
+                    if (p.id === targetId) {
+                        return {
+                            ...p,
+                            nama: fields.nama.value.trim(),
+                            email: fields.email.value.trim(),
+                            kelas: fields.kelas.value,
+                            jurusan: fields.jurusan.value,
+                            kegiatan: fields.kegiatan.value.trim(),
+                            konsumsi: konsumsiValue,
+                            status: statusPesertaSelect.value
+                        };
+                    }
+                    return p;
+                });
+                statusAlert.textContent = "Data peserta berhasil diperbarui!";
+            } else {
+                const newPeserta = {
+                    id: "Id_daftar_" + Date.now(),
+                    nama: fields.nama.value.trim(),
+                    email: fields.email.value.trim(),
+                    kelas: fields.kelas.value,
+                    jurusan: fields.jurusan.value,
+                    kegiatan: fields.kegiatan.value.trim(),
+                    konsumsi: konsumsiValue,
+                    status: "Pending"
+                };
+                daftarPendaftar.push(newPeserta);
+                statusAlert.textContent = "Pendaftaran berhasil disimpan!";
+            }
 
-            hasilDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+            saveData();
+            renderTampilan();
+            resetFormMode();
+
+            statusAlert.className = "alert-box success";
+            setTimeout(() => {
+                statusAlert.style.display = "none";
+            }, 3000);
         } else {
-            hasilDiv.className = "error";
-            hasilDiv.textContent = "Gagal mendaftar.Tolong diperiksa kembali bagian yang belum diisi dengan benar.";
-            
-            hasilDiv.scrollIntoView({ behavior: "smooth", block: "center" });
+            statusAlert.className = "alert-box error";
+            statusAlert.textContent = "Periksa kembali field yang diisi.";
         }
     });
+
+    renderTampilan();
 });
