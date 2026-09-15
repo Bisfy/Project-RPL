@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusFieldGroup = document.getElementById("statusFieldGroup");
     const statusPesertaSelect = document.getElementById("statusPeserta");
 
-    // Elemen Navigasi Kontrol Menu
+    // Navbar
     const btnPageForm = document.getElementById("btnPageForm");
     const btnPageTable = document.getElementById("btnPageTable");
     const pageForm = document.getElementById("pageForm");
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         persetujuan: document.getElementById("persetujuan")
     };
 
-    // --- LOGIKA PERPINDAHAN HALAMAN AKTIF ---
+    // transisi pages
     const gantiHalaman = (halamanTujuan, tombolAktif) => {
         pageForm.classList.remove("aktif");
         pageTable.classList.remove("aktif");
@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleSubmit();
     };
 
-    // --- AKSI EDIT (Otomatis pindah ke Halaman Form) ---
+    // Edit dan kembali ke halaman form
     window.handleEdit = (id) => {
         const targetPeserta = daftarPendaftar.find(p => p.id === id);
         if (!targetPeserta) return;
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         toggleSubmit();
 
-        // Navigasi ke Form saat tombol edit ditekan
+        // navbar (edit)
         gantiHalaman(pageForm, btnPageForm);
         form.scrollIntoView({ behavior: "smooth" });
     };
@@ -221,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
         gantiHalaman(pageTable, btnPageTable);
     });
 
-    // --- AKSI SUBMIT FORM ---
+    // submit
     form.addEventListener("submit", (e) => {
         e.preventDefault();
 
