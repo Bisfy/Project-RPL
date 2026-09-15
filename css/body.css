@@ -35,7 +35,7 @@
         --text-sub: #c4c6d0;
         --error: #f2b8b5;
         --error-bg: #601410;
-        --success: #6ddb7c;
+        --success: #6ddb7c; 
         --success-bg: #0a511e;
 
         --badge-pending-bg: #4a3b00;
@@ -45,6 +45,11 @@
         --badge-reject-bg: #601410;
         --badge-reject-text: #f2b8b5;
     }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px);}
+    to {opacity: 1; transform: translateY(0);}
 }
 
 * {
@@ -62,17 +67,64 @@ body {
     min-height: 100vh;
 }
 
+/*Double page style*/
+.halaman {
+    display: none;
+}
+
+.halaman.aktif {
+    display: block;
+    animation: fadeIn 0.4s ease forwards;
+}
+
 .container {
     max-width: 1300px;
     width: 100%;
     margin: 0 auto;
     padding: 0 20px 40px;
-    display: grid;
-    grid-template-columns: 420px 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 24px;
-    align-items: start;
+    align-items: stretch;
 }
 
+/*Navbar*/
+.nav-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    background-color: var(--surface);
+    padding: 6px;
+    border-radius: var(--radius-card);
+    max-width: 450px;
+    width: 100%;
+    align-self: center;
+}
+
+.nav-btn {
+    flex: 1;
+    border: none;
+    background: none;
+    padding: 12px;
+    border-radius: calc(var(--radius-card) - 6px);
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-sub);
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-btn:hover {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+}
+
+.nav-btn.active-tab {
+    background-color: var(--surface-variant);
+    color: var(--text-main);
+}
+
+/*Card & Form*/
 .pixel-card {
     background-color: var(--surface);
     border-radius: var(--radius-card);
@@ -313,10 +365,4 @@ select:focus {
 .btn-delete {
     background-color: var(--error-bg);
     color: var(--error);
-}
-
-@media (max-width: 992px) {
-    .container {
-        grid-template-columns: 1fr;
-    }
 }

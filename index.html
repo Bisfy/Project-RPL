@@ -20,7 +20,15 @@
     </header>
 
     <main class="container">
-        <section class="pixel-card form-card">
+        
+        <!--Navbar-->
+        <div class="nav-tabs">
+            <button class="nav-btn active-tab" id="btnPageForm">Formulir Pendaftaran</button>
+            <button class="nav-btn" id="btnPageTable">Daftar Peserta</button>
+        </div>
+
+        <!--Hal 1-->
+        <section id="pageForm" class="pixel-card form-card halaman aktif">
             <div class="card-header">
                 <h2 id="formTitle">Formulir Pendaftaran</h2>
                 <button type="button" id="btnCancelEdit" class="btn-cancel" style="display: none;">Batal Edit</button>
@@ -110,7 +118,8 @@
             </form>
         </section>
 
-        <section class="pixel-card table-card">
+        <!--hal2-->
+        <section id="pageTable" class="pixel-card table-card halaman">
             <h2>Daftar Peserta Terdaftar</h2>
             <div class="table-wrapper">
                 <table class="pixel-table">

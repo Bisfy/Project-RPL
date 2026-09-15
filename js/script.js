@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     let daftarPendaftar = JSON.parse(localStorage.getItem("daftarPendaftar")) || [];
 
-     const form = document.getElementById("formPendaftaran");
+    const form = document.getElementById("formPendaftaran");
     const statusAlert = document.getElementById("statusAlert");
     const btnSubmit = document.getElementById("btnSubmit");
     const tabelBody = document.getElementById("tabelPesertaBody");
@@ -11,6 +11,12 @@ document.addEventListener("DOMContentLoaded", () => {
     const statusFieldGroup = document.getElementById("statusFieldGroup");
     const statusPesertaSelect = document.getElementById("statusPeserta");
 
+    // Elemen Navigasi Kontrol Menu
+    const btnPageForm = document.getElementById("btnPageForm");
+    const btnPageTable = document.getElementById("btnPageTable");
+    const pageForm = document.getElementById("pageForm");
+    const pageTable = document.getElementById("pageTable");
+
     const fields = {
         nama: document.getElementById("nama"),
         email: document.getElementById("email"),
@@ -19,6 +25,20 @@ document.addEventListener("DOMContentLoaded", () => {
         kegiatan: document.getElementById("kegiatan"),
         persetujuan: document.getElementById("persetujuan")
     };
+
+    // --- LOGIKA PERPINDAHAN HALAMAN AKTIF ---
+    const gantiHalaman = (halamanTujuan, tombolAktif) => {
+        pageForm.classList.remove("aktif");
+        pageTable.classList.remove("aktif");
+        btnPageForm.classList.remove("active-tab");
+        btnPageTable.classList.remove("active-tab");
+
+        halamanTujuan.classList.add("aktif");
+        tombolAktif.classList.add("active-tab");
+    };
+
+    if (btnPageForm) btnPageForm.addEventListener("click", () => gantiHalaman(pageForm, btnPageForm));
+    if (btnPageTable) btnPageTable.addEventListener("click", () => gantiHalaman(pageTable, btnPageTable));
 
     const saveData = () => {
         localStorage.setItem("daftarPendaftar", JSON.stringify(daftarPendaftar));
@@ -30,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
-            "'": '&#039;'
+            "'": '&#39;'
         })[m]);
     };
 
@@ -134,8 +154,10 @@ document.addEventListener("DOMContentLoaded", () => {
     Object.keys(fields).forEach((key) => {
         if (key === "persetujuan") return;
         const el = fields[key];
-        const eventName = el.tagName === "SELECT" ? "change" : "input";
-        el.addEventListener(eventName, () => clearError(key));
+        if (el) {
+            const eventName = el.tagName === "SELECT" ? "change" : "input";
+            el.addEventListener(eventName, () => clearError(key));
+        }
     });
 
     const radioGroup = form.querySelectorAll('input[name="konsumsi"]');
@@ -151,6 +173,7 @@ document.addEventListener("DOMContentLoaded", () => {
         toggleSubmit();
     };
 
+    // --- AKSI EDIT (Otomatis pindah ke Halaman Form) ---
     window.handleEdit = (id) => {
         const targetPeserta = daftarPendaftar.find(p => p.id === id);
         if (!targetPeserta) return;
@@ -174,10 +197,13 @@ document.addEventListener("DOMContentLoaded", () => {
         statusFieldGroup.style.display = "flex";
 
         toggleSubmit();
+
+        // Navigasi ke Form saat tombol edit ditekan
+        gantiHalaman(pageForm, btnPageForm);
         form.scrollIntoView({ behavior: "smooth" });
     };
 
-   window.handleDelete = (id) => {
+    window.handleDelete = (id) => {
         const confirmDelete = confirm("Apakah Anda yakin ingin menghapus peserta ini?");
         if (confirmDelete) {
             daftarPendaftar = daftarPendaftar.filter(p => p.id !== id);
@@ -192,9 +218,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     btnCancelEdit.addEventListener("click", () => {
         resetFormMode();
+        gantiHalaman(pageTable, btnPageTable);
     });
 
-     form.addEventListener("submit", (e) => {
+    // --- AKSI SUBMIT FORM ---
+    form.addEventListener("submit", (e) => {
         e.preventDefault();
 
         if (validate()) {
@@ -239,14 +267,10 @@ document.addEventListener("DOMContentLoaded", () => {
             resetFormMode();
 
             statusAlert.className = "alert-box success";
-            setTimeout(() => {
-                statusAlert.style.display = "none";
-            }, 3000);
-        } else {
-            statusAlert.className = "alert-box error";
-            statusAlert.textContent = "Periksa kembali field yang diisi.";
-        }
-    });
 
+            setTimeout(() => {statusAlert.style.display = "none";}, 3000);// Otomatis pindah ke halaman daftar peserta setelah sukses input 
+        datagantiHalaman(pageTable, btnPageTable);} else {statusAlert.className = "alert-box error";
+            statusAlert.textContent = "Periksa kembali field yang diisi.";
+    }});
     renderTampilan();
 });
